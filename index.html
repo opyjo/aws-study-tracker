@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS SAA-C03 Study Tracker</title>
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Link to the premium styling sheet -->
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <!-- Loading State Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-container">
+      <div class="cloud-loader">
+        <div class="cloud-base"></div>
+        <div class="cloud-arch"></div>
+      </div>
+      <h2>AWS Study Tracker</h2>
+      <p id="loading-text">Loading study progress...</p>
+      <div class="loading-bar-track">
+        <div class="loading-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Wrapper -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main Top Bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo-wrapper">
+        <div class="logo-icon">☁️</div>
+        <div>
+          <h1>AWS SAA-C03 Study Tracker</h1>
+          <p class="subtitle">May 27 → Jul 17, 2026 · Office: Mon/Tue/Wed · WFH: Thu/Fri</p>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <!-- Firebase connection / sync status indicator badge -->
+      <div id="sync-status" class="sync-status offline">
+        <span class="status-indicator"></span>
+        <span class="status-text">Offline</span>
+      </div>
+      <div class="exam-badge">📅 Exam: Jul 17 · 9:15 AM</div>
+    </div>
+  </header>
+
+  <!-- Progress Dashboard Section -->
+  <section class="progress-wrap">
+    <div class="progress-container">
+      <div class="prog-stats">
+        <div class="prog-stat">
+          <label>Completed</label>
+          <div class="stat-val"><span id="done-count">0</span> <span class="divider">/</span> <span id="total-count">0</span></div>
+        </div>
+        <div class="prog-stat">
+          <label>Progress</label>
+          <div class="stat-val" id="pct">0%</div>
+        </div>
+        <div class="prog-stat">
+          <label>Days to Exam</label>
+          <div class="stat-val" id="days-left">—</div>
+        </div>
+        <div class="prog-stat">
+          <label>On Track Indicator</label>
+          <div class="stat-val" id="on-track">—</div>
+        </div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="bar" style="width:0%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Application Content Area -->
+  <main class="main">
+    <!-- Status Legend -->
+    <div class="legend">
+      <div class="legend-items">
+        <div class="legend-item">
+          <div class="legend-color legend-overdue"></div>
+          <span>Overdue</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-today"></div>
+          <span>Due today</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-completed"></div>
+          <span>Completed</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-upcoming"></div>
+          <span>Upcoming</span>
+        </div>
+      </div>
+      <div class="legend-instruction">Click any item to toggle or change completion details</div>
+    </div>
+
+    <!-- Generated Phase and Topic Content -->
+    <div id="main-content" class="fade-in"></div>
+
+    <!-- Danger Zone/Control Area -->
+    <footer class="footer">
+      <button class="reset-btn" id="reset-btn">Reset study tracker progress</button>
+    </footer>
+  </main>
+
+  <!-- Interactive Modal for Custom Completion Dates -->
+  <div class="modal-bg" id="modal-bg">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Item Title</h3>
+        <button class="modal-close-btn" id="modal-close-x-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-meta-row">
+          <span class="meta-label">Target Day:</span>
+          <span id="modal-meta" class="meta-value">---</span>
+        </div>
+        <div class="modal-meta-row">
+          <span class="meta-label">Time Window:</span>
+          <span id="modal-time" class="meta-value">---</span>
+        </div>
+        
+        <div class="input-group">
+          <label for="modal-date">Date Completed</label>
+          <input type="date" id="modal-date">
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+        <button class="btn btn-danger" id="modal-clear-btn" style="display:none">Clear</button>
+        <button class="btn btn-primary" id="modal-save-btn">Save ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load JavaScript ES Module -->
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
