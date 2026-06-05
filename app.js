@@ -500,7 +500,7 @@ function updateProgress() {
   if (pctEl) pctEl.textContent = pct + '%';
   if (barEl) barEl.style.width = pct + '%';
   
-  const exam = new Date('2026-07-26T00:00:00');
+  const exam = new Date('2026-07-17T00:00:00');
   const today = new Date(); today.setHours(0,0,0,0);
   const diff = Math.ceil((exam - today) / (1000*60*60*24));
   
