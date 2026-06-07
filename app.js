@@ -188,92 +188,61 @@ const DATA = [
   },
   {
     id:'phase-consolidation', label:'Phase 5 — Consolidation', color:'#7a70d0',
-    dates:'Jul 4 – Jul 23', note:'Flashcards · wrong answer reviews · weak area drill · taper',
+    dates:'Jul 4 – Jul 16', note:'Flashcards · wrong answer reviews · weak area drill · taper',
     groups:[
-      { label:'Late June — bonus consolidation week', days:[
+      { label:'Consolidation week', days:[
         { date:'2026-07-04', label:'Sat Jul 4', items:[
-          {id:'fl-1',   name:'Flashcards — Part 1 (full review)',              time:'5:15 AM – 7:15 AM', block:'Morning', tag:'flash'},
-          {id:'fl-1-ev',name:'Evening — weak area drill from topic/review scores',time:'5:30 PM – 7:30 PM', block:'Evening', tag:'flash'},
+          {id:'fl-1',   name:'Flashcards — Part 1 (full review)',              time:'8:30 AM – 11:00 AM', block:'Block 1', tag:'flash'},
+          {id:'fl-2',   name:'Flashcards — Part 2 (full review)',              time:'12:00 PM – 2:30 PM', block:'Block 2', tag:'flash'},
         ]},
         { date:'2026-07-05', label:'Sun Jul 5', items:[
-          {id:'fl-2',   name:'Flashcards — Part 2 (full review)',              time:'5:15 AM – 7:15 AM', block:'Morning', tag:'flash'},
-          {id:'fl-2-ev',name:'Evening — weak area drill (continue)',           time:'5:30 PM – 7:30 PM', block:'Evening', tag:'flash'},
-        ]},
-        { date:'2026-07-06', label:'Mon Jul 6', items:[
           {id:'wa-1',   name:'Wrong answers mega review — all topic tests',    time:'8:30 AM – 11:00 AM',block:'Block 1', tag:'flash'},
           {id:'wa-2',   name:'Wrong answers mega review — all review sets',    time:'12:00 PM – 2:30 PM', block:'Block 2', tag:'flash'},
         ]},
+        { date:'2026-07-06', label:'Mon Jul 6', items:[
+          {id:'wa-3',   name:'Wrong answers mega review — all timed sets',     time:'4:45 AM – 6:45 AM', block:'Morning', tag:'flash'},
+          {id:'wa-4',   name:'Wrong answers mega review — all section tests',  time:'6:00 PM – 8:00 PM', block:'Evening', tag:'flash'},
+        ]},
         { date:'2026-07-07', label:'Tue Jul 7', items:[
-          {id:'wa-3',   name:'Wrong answers mega review — all timed sets',     time:'8:30 AM – 11:00 AM',block:'Block 1', tag:'flash'},
-          {id:'wa-4',   name:'Wrong answers mega review — all section tests',  time:'12:00 PM – 2:30 PM', block:'Block 2', tag:'flash'},
+          {id:'qp-1',   name:'Section quick-pass — Secure + Resilient',        time:'4:45 AM – 6:45 AM', block:'Morning', tag:'section'},
+          {id:'qp-2',   name:'Section quick-pass — High-Perf + Cost-Opt',      time:'6:00 PM – 8:00 PM', block:'Evening', tag:'section'},
         ]},
         { date:'2026-07-08', label:'Wed Jul 8', items:[
-          {id:'qp-1',   name:'Section quick-pass — Secure + Resilient',        time:'4:45 AM – 6:45 AM', block:'Morning', tag:'section'},
-          {id:'qp-1-ev',name:'Evening — weak area drill (lowest scoring service)',time:'6:00 PM – 8:00 PM', block:'Evening', tag:'flash'},
-        ]},
-        { date:'2026-07-09', label:'Thu Jul 9', items:[
-          {id:'qp-2',   name:'Section quick-pass — High-Perf + Cost-Opt',      time:'4:45 AM – 6:45 AM', block:'Morning', tag:'section'},
-          {id:'qp-2-ev',name:'Evening — weak area drill (second weakest service)',time:'6:00 PM – 8:00 PM', block:'Evening', tag:'flash'},
+          {id:'fl-1-ev',name:'Weak area drill — lowest scoring services',      time:'4:45 AM – 6:45 AM', block:'Morning', tag:'flash'},
+          {id:'fl-2-ev',name:'Evening — weak area drill (continue)',           time:'6:00 PM – 8:00 PM', block:'Evening', tag:'flash'},
         ]},
       ]},
-      { label:'July — final prep & taper', days:[
-        { date:'2026-07-10', label:'Fri Jul 10', items:[
+      { label:'Final prep & taper', days:[
+        { date:'2026-07-09', label:'Thu Jul 9', items:[
           {id:'j-1',   name:'Weak area drill — final gaps only',              time:'4:45 AM – 6:45 AM', block:'Morning', tag:'flash'},
           {id:'j-1-ev',name:'Evening — review remaining wrong answers',       time:'6:00 PM – 8:00 PM', block:'Evening', tag:'flash'},
         ]},
+        { date:'2026-07-10', label:'Fri Jul 10', items:[
+          {id:'j-2',   name:'Final timed test — benchmark your readiness',    time:'5:15 AM – 7:15 AM', block:'Morning', tag:'timed'},
+          {id:'j-2-ev',name:'Evening — review final test wrong answers',      time:'5:30 PM – 7:30 PM', block:'Evening', tag:'timed'},
+        ]},
         { date:'2026-07-11', label:'Sat Jul 11', items:[
-          {id:'j-2',   name:'Weak area drill — consolidation',                time:'5:15 AM – 7:15 AM', block:'Morning', tag:'flash'},
-          {id:'j-2-ev',name:'Evening — cheat sheet pass through',             time:'5:30 PM – 7:30 PM', block:'Evening', tag:'flash'},
+          {id:'j-3',   name:'Weak area drill — anything flagged from final test',time:'8:30 AM – 11:00 AM',block:'Block 1',tag:'flash'},
+          {id:'j-3-ev',name:'Block 2 — light review, no pressure',            time:'12:00 PM – 2:30 PM', block:'Block 2', tag:'flash'},
         ]},
         { date:'2026-07-12', label:'Sun Jul 12', items:[
-          {id:'j-3',   name:'Final timed test — benchmark your readiness',    time:'5:15 AM – 7:15 AM', block:'Morning', tag:'timed'},
-          {id:'j-3-ev',name:'Evening — review final test wrong answers',      time:'5:30 PM – 7:30 PM', block:'Evening', tag:'timed'},
+          {id:'j-4',   name:'Flashcards — rapid-fire both parts',             time:'8:30 AM – 11:00 AM',block:'Block 1', tag:'flash'},
+          {id:'j-4-ev',name:'Block 2 — cheat sheet pass through',             time:'12:00 PM – 2:30 PM', block:'Block 2', tag:'flash'},
         ]},
         { date:'2026-07-13', label:'Mon Jul 13', items:[
-          {id:'j-4',   name:'Weak area drill — anything flagged from final test',time:'8:30 AM – 11:00 AM',block:'Block 1',tag:'flash'},
-          {id:'j-4-ev',name:'Block 2 — light review, no pressure',            time:'12:00 PM – 2:30 PM', block:'Block 2', tag:'flash'},
-        ]},
-        { date:'2026-07-14', label:'Tue Jul 14', items:[
-          {id:'j-5',   name:'Flashcards — rapid-fire both parts',             time:'8:30 AM – 11:00 AM',block:'Block 1', tag:'flash'},
-          {id:'j-5-ev',name:'Block 2 — relax, light review only',             time:'12:00 PM – 2:30 PM', block:'Block 2', tag:'flash'},
-        ]},
-        { date:'2026-07-15', label:'Wed Jul 15', items:[
-          {id:'j-6',   name:'Cheat sheet review — no new questions',          time:'4:45 AM – 6:45 AM', block:'Morning', tag:'flash'},
-          {id:'j-6-ev',name:'Evening — final flashcard pass',                 time:'6:00 PM – 8:00 PM', block:'Evening', tag:'flash'},
-        ]},
-        { date:'2026-07-16', label:'Thu Jul 16', items:[
-          {id:'j-7',   name:'Cheat sheet review — focus on weak domains',     time:'4:45 AM – 6:45 AM', block:'Morning', tag:'flash'},
-          {id:'j-7-ev',name:'Evening — light review only, wind down',         time:'6:00 PM – 8:00 PM', block:'Evening', tag:'flash'},
-        ]},
-        { date:'2026-07-17', label:'Fri Jul 17', items:[
-          {id:'j-8',   name:'LAST STUDY DAY — flashcards only, keep it light',time:'4:45 AM – 6:45 AM', block:'Morning', tag:'flash'},
-          {id:'j-8-ev',name:'Evening — stop studying after this. You are ready.',time:'6:00 PM – 7:00 PM', block:'Evening', tag:'flash'},
+          {id:'j-5',   name:'LAST STUDY DAY — cheat sheet review, keep it light',time:'4:45 AM – 6:45 AM', block:'Morning', tag:'flash'},
+          {id:'j-5-ev',name:'Evening — stop studying after this. You are ready.',time:'6:00 PM – 7:00 PM', block:'Evening', tag:'flash'},
         ]},
       ]},
       { label:'Final rest before exam', days:[
-        { date:'2026-07-18', label:'Sat Jul 18', items:[
+        { date:'2026-07-14', label:'Tue Jul 14', items:[
           {id:'rest-1', name:'REST — no studying',                             time:'—', block:'Full day', tag:'rest'},
         ]},
-        { date:'2026-07-19', label:'Sun Jul 19', items:[
+        { date:'2026-07-15', label:'Wed Jul 15', items:[
           {id:'rest-2', name:'REST — no studying',                             time:'—', block:'Full day', tag:'rest'},
         ]},
-        { date:'2026-07-20', label:'Mon Jul 20', items:[
-          {id:'rest-3', name:'REST — enjoy your weekend',                      time:'—', block:'Full day', tag:'rest'},
-        ]},
-        { date:'2026-07-21', label:'Tue Jul 21', items:[
-          {id:'rest-4', name:'REST — enjoy your weekend',                      time:'—', block:'Full day', tag:'rest'},
-        ]},
-        { date:'2026-07-22', label:'Wed Jul 22', items:[
-          {id:'rest-5', name:'REST — no studying',                             time:'—', block:'Full day', tag:'rest'},
-        ]},
-        { date:'2026-07-23', label:'Thu Jul 23', items:[
-          {id:'rest-6', name:'REST — no studying',                             time:'—', block:'Full day', tag:'rest'},
-        ]},
-        { date:'2026-07-24', label:'Fri Jul 24', items:[
-          {id:'rest-7', name:'REST — no studying',                             time:'—', block:'Full day', tag:'rest'},
-        ]},
-        { date:'2026-07-25', label:'Sat Jul 25', items:[
-          {id:'rest-8', name:'REST — exam tomorrow. Set up your space, sleep early.',time:'—', block:'Full day', tag:'rest'},
+        { date:'2026-07-16', label:'Thu Jul 16', items:[
+          {id:'rest-3', name:'REST — exam tomorrow. Set up your space, sleep early.',time:'—', block:'Full day', tag:'rest'},
         ]},
       ]},
     ]
