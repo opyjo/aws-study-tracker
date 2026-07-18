@@ -1,149 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AWS SAA-C03 Study Tracker</title>
-  <!-- Premium Google Fonts -->
+  <meta name="theme-color" content="#171b16">
+  <meta name="description" content="A calm, focused AWS SAA-C03 study plan for the September 5, 2026 exam.">
+  <title>Cloudline — AWS SAA-C03 Study Plan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Link to the premium styling sheet -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-
-  <!-- Loading State Screen -->
-  <div id="loading-screen" class="loading-screen">
-    <div class="loading-container">
-      <div class="cloud-loader">
-        <div class="cloud-base"></div>
-        <div class="cloud-arch"></div>
-      </div>
-      <h2>AWS Study Tracker</h2>
-      <p id="loading-text">Loading study progress...</p>
-      <div class="loading-bar-track">
-        <div class="loading-bar-fill"></div>
-      </div>
-    </div>
+  <div id="loading-screen" class="loading-screen" aria-live="polite">
+    <div class="loader-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+    <p id="loading-text">Preparing your new study plan…</p>
   </div>
 
-  <!-- Toast Notification Wrapper -->
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- Main Top Bar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="logo-wrapper">
-        <div class="logo-icon">☁️</div>
-        <div>
-          <h1>AWS SAA-C03 Study Tracker</h1>
-          <p class="subtitle">Jun 5 → Jul 17, 2026 · Office: Mon/Tue/Wed · WFH: Thu/Fri</p>
-        </div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#today" aria-label="Cloudline home">
+        <span class="brand-mark" aria-hidden="true">CL</span>
+        <span><strong>Cloudline</strong><small>AWS SAA-C03</small></span>
+      </a>
+
+      <nav class="nav-list" aria-label="Study tracker navigation">
+        <a class="nav-link active" href="#today"><span>01</span>Today</a>
+        <a class="nav-link" href="#roadmap"><span>02</span>Roadmap</a>
+        <a class="nav-link" href="#readiness"><span>03</span>Readiness</a>
+      </nav>
+
+      <div class="sidebar-note">
+        <span class="eyebrow">Your finish line</span>
+        <strong>September 5</strong>
+        <p>Consistency beats cramming. Protect the final three calm days.</p>
       </div>
-    </div>
-    <div class="topbar-right">
-      <!-- Firebase connection / sync status indicator badge -->
+
       <div id="sync-status" class="sync-status offline">
-        <span class="status-indicator"></span>
-        <span class="status-text">Offline</span>
+        <span class="status-dot"></span>
+        <span class="status-text">Connecting</span>
       </div>
-      <div class="exam-badge">📅 Exam: Jul 17 · 9:15 AM</div>
-    </div>
-  </header>
+    </aside>
 
-  <!-- Progress Dashboard Section -->
-  <section class="progress-wrap">
-    <div class="progress-container">
-      <div class="prog-stats">
-        <div class="prog-stat">
-          <label>Completed</label>
-          <div class="stat-val"><span id="done-count">0</span> <span class="divider">/</span> <span id="total-count">0</span></div>
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="page-kicker" id="current-date">Saturday, July 18</p>
+          <h1 id="greeting">Good morning.</h1>
         </div>
-        <div class="prog-stat">
-          <label>Progress</label>
-          <div class="stat-val" id="pct">0%</div>
+        <div class="topbar-actions">
+          <button class="icon-button" id="reset-btn" type="button" title="Reset all progress" aria-label="Reset all progress">
+            <span aria-hidden="true">↻</span>
+          </button>
+          <div class="avatar" aria-label="Study profile">S</div>
         </div>
-        <div class="prog-stat">
-          <label>Days to Exam</label>
-          <div class="stat-val" id="days-left">—</div>
+      </header>
+
+      <section class="hero" id="today">
+        <div class="hero-copy">
+          <span class="eyebrow light">Next milestone</span>
+          <h2><span id="days-left">49</span> days to become<br>exam ready.</h2>
+          <p id="hero-message">A fresh plan. One focused session at a time.</p>
+          <div class="hero-progress" aria-label="Overall study progress">
+            <div class="hero-progress-meta">
+              <span>Overall progress</span>
+              <strong id="pct">0%</strong>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="bar"></div></div>
+          </div>
         </div>
-        <div class="prog-stat">
-          <label>On Track Indicator</label>
-          <div class="stat-val" id="on-track">—</div>
+        <div class="exam-orbit" aria-label="Exam date September 5, 2026">
+          <div class="orbit-ring"><span></span></div>
+          <div class="exam-date"><small>Exam day</small><strong>SEP</strong><b>05</b><em>2026</em></div>
         </div>
+      </section>
+
+      <section class="stat-grid" aria-label="Study plan overview">
+        <article class="stat-card">
+          <span class="stat-icon sage" aria-hidden="true">✓</span>
+          <div><small>Sessions complete</small><strong><span id="done-count">0</span><em> / <span id="total-count">0</span></em></strong></div>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon amber" aria-hidden="true">↗</span>
+          <div><small>Current pace</small><strong id="pace-value">Fresh start</strong></div>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon lavender" aria-hidden="true">◎</span>
+          <div><small>Next full mock</small><strong id="next-mock">Aug 15</strong></div>
+        </article>
+      </section>
+
+      <div class="content-grid">
+        <section class="primary-column">
+          <div class="section-heading">
+            <div><span class="eyebrow">Focus</span><h2 id="focus-title">Today’s plan</h2></div>
+            <span class="focus-duration" id="focus-duration">2 sessions</span>
+          </div>
+          <div id="focus-list" class="focus-list"></div>
+
+          <section class="roadmap-section" id="roadmap">
+            <div class="section-heading roadmap-heading">
+              <div><span class="eyebrow">The roadmap</span><h2>Five phases to exam day</h2></div>
+              <div class="filter-pills" aria-label="Filter study plan">
+                <button class="filter-pill active" data-filter="all" type="button">All</button>
+                <button class="filter-pill" data-filter="practice" type="button">Mocks</button>
+                <button class="filter-pill" data-filter="review" type="button">Review</button>
+              </div>
+            </div>
+            <div id="schedule-list" class="schedule-list"></div>
+          </section>
+        </section>
+
+        <aside class="insights-column" id="readiness">
+          <section class="insight-card readiness-card">
+            <div class="card-heading"><div><span class="eyebrow">Readiness</span><h3>Domain confidence</h3></div><strong id="readiness-score">0%</strong></div>
+            <p>Based on completed sessions across the four exam domains.</p>
+            <div id="domain-bars" class="domain-bars"></div>
+          </section>
+
+          <section class="insight-card cadence-card">
+            <span class="eyebrow">Weekly rhythm</span>
+            <h3>Built around your work week.</h3>
+            <div class="cadence-row"><span>Mon–Wed</span><strong>45–60 min</strong><small>Office days · focused review</small></div>
+            <div class="cadence-row"><span>Thu–Fri</span><strong>75–90 min</strong><small>WFH · deeper practice</small></div>
+            <div class="cadence-row"><span>Weekend</span><strong>2–3 hrs</strong><small>Mocks + answer review</small></div>
+          </section>
+
+          <blockquote class="encouragement">
+            <span aria-hidden="true">“</span>
+            <p>You do not need a perfect day. You need the next honest session.</p>
+          </blockquote>
+        </aside>
       </div>
-      <div class="bar-track">
-        <div class="bar-fill" id="bar" style="width:0%"></div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Main Application Content Area -->
-  <main class="main">
-    <!-- Status Legend -->
-    <div class="legend">
-      <div class="legend-items">
-        <div class="legend-item">
-          <div class="legend-color legend-overdue"></div>
-          <span>Overdue</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-color legend-today"></div>
-          <span>Due today</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-color legend-completed"></div>
-          <span>Completed</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-color legend-upcoming"></div>
-          <span>Upcoming</span>
-        </div>
-      </div>
-      <div class="legend-instruction">Click any item to toggle or change completion details</div>
-    </div>
+      <footer class="footer">
+        <span>Cloudline · SAA-C03</span>
+        <span>Plan reset for September 5, 2026</span>
+      </footer>
+    </main>
+  </div>
 
-    <!-- Generated Phase and Topic Content -->
-    <div id="main-content" class="fade-in"></div>
-
-    <!-- Danger Zone/Control Area -->
-    <footer class="footer">
-      <button class="reset-btn" id="reset-btn">Reset study tracker progress</button>
-    </footer>
-  </main>
-
-  <!-- Interactive Modal for Custom Completion Dates -->
-  <div class="modal-bg" id="modal-bg">
+  <div class="modal-bg" id="modal-bg" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal">
-      <div class="modal-header">
-        <h3 id="modal-title">Item Title</h3>
-        <button class="modal-close-btn" id="modal-close-x-btn">&times;</button>
+      <button class="modal-close" id="modal-close-x-btn" type="button" aria-label="Close">×</button>
+      <span class="eyebrow" id="modal-phase">Study session</span>
+      <h2 id="modal-title">Session title</h2>
+      <p id="modal-meta" class="modal-meta"></p>
+
+      <div class="modal-form">
+        <label>Date completed<input type="date" id="modal-date"></label>
+        <label id="score-field">Score <span>(optional)</span><div class="score-input"><input type="number" id="modal-score" min="0" max="100" inputmode="numeric" placeholder="—"><span>%</span></div></label>
+        <label>Quick note <span>(optional)</span><textarea id="modal-note" rows="3" maxlength="240" placeholder="What should you revisit?"></textarea></label>
       </div>
-      <div class="modal-body">
-        <div class="modal-meta-row">
-          <span class="meta-label">Target Day:</span>
-          <span id="modal-meta" class="meta-value">---</span>
-        </div>
-        <div class="modal-meta-row">
-          <span class="meta-label">Time Window:</span>
-          <span id="modal-time" class="meta-value">---</span>
-        </div>
-        
-        <div class="input-group">
-          <label for="modal-date">Date Completed</label>
-          <input type="date" id="modal-date">
-        </div>
-      </div>
-      <div class="modal-btns">
-        <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
-        <button class="btn btn-danger" id="modal-clear-btn" style="display:none">Clear</button>
-        <button class="btn btn-primary" id="modal-save-btn">Save ✓</button>
+
+      <div class="modal-actions">
+        <button class="button secondary" id="modal-clear-btn" type="button">Mark incomplete</button>
+        <button class="button primary" id="modal-save-btn" type="button">Complete session</button>
       </div>
     </div>
   </div>
 
-  <!-- Load JavaScript ES Module -->
+  <div class="confirm-bg" id="confirm-bg" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="confirm-card">
+      <span class="confirm-icon" aria-hidden="true">↻</span>
+      <h2 id="confirm-title">Reset your new plan?</h2>
+      <p>This clears completion dates, scores, and notes for the September 5 schedule. It cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="button secondary" id="reset-cancel" type="button">Keep progress</button>
+        <button class="button danger" id="reset-confirm" type="button">Reset everything</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="./app.js"></script>
 </body>
 </html>
