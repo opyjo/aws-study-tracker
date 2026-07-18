@@ -26,65 +26,95 @@ const phase = (id, number, title, dates, promise, sessions) => ({ id, number, ti
 const session = (date, title, detail, duration, type, domain = "general", scoreable = false) => ({ date, title, detail, duration, type, domain, scoreable });
 
 const PHASES = [
-  phase("reboot", "01", "Reset & rebuild", "Jul 18 — Jul 26", "Find the gaps, then rebuild the services everything else depends on.", [
-    session("2026-07-18", "Fresh-start diagnostic", "65 questions · timed baseline · no notes", 130, "practice", "general", true),
-    session("2026-07-18", "Build the weak-area list", "Tag every miss by domain and service", 30, "review"),
-    session("2026-07-19", "Diagnostic answer review", "Read every explanation, including correct guesses", 120, "review"),
-    session("2026-07-20", "IAM, Organizations & identity", "Policies, roles, SCPs, federation and Identity Center", 60, "learn", "security"),
-    session("2026-07-21", "VPC foundations", "Subnets, routing, NAT, endpoints and security groups", 60, "learn", "resilience"),
-    session("2026-07-22", "EC2, ELB & Auto Scaling", "Placement, purchasing, health checks and scaling policy", 60, "learn", "performance"),
-    session("2026-07-23", "S3 & storage decisions", "Classes, lifecycle, replication, EBS and EFS", 90, "learn", "cost"),
-    session("2026-07-24", "Database decision map", "RDS, Aurora, DynamoDB and ElastiCache", 90, "learn", "performance"),
-    session("2026-07-25", "Core services mini-test", "40 mixed questions · target 72%+", 75, "practice", "general", true),
-    session("2026-07-26", "Mini-test review + flashcards", "Turn repeated mistakes into short prompts", 90, "review")
+  phase("topic", "01", "Topic-based tests", "Jul 18 — Jul 24", "Test one service at a time and expose the gaps before mixed practice.", [
+    session("2026-07-18", "Topic-Based — IAM", "Complete the full IAM topic test", 60, "practice", "security", true),
+    session("2026-07-18", "Topic-Based — EC2", "Complete the full EC2 topic test", 60, "practice", "performance", true),
+    session("2026-07-19", "Topic-Based — VPC", "Complete the full VPC topic test", 60, "practice", "resilience", true),
+    session("2026-07-19", "Topic-Based — S3", "Complete the full S3 topic test", 60, "practice", "cost", true),
+    session("2026-07-20", "Topic-Based — EBS", "Complete the full EBS topic test", 60, "practice", "performance", true),
+    session("2026-07-20", "Topic-Based — EFS", "Complete the full EFS topic test", 60, "practice", "performance", true),
+    session("2026-07-21", "Topic-Based — RDS", "Complete the full RDS topic test", 60, "practice", "resilience", true),
+    session("2026-07-21", "Topic-Based — DynamoDB", "Complete the full DynamoDB topic test", 60, "practice", "performance", true),
+    session("2026-07-22", "Topic-Based — Auto Scaling", "Complete the full Auto Scaling topic test", 60, "practice", "resilience", true),
+    session("2026-07-22", "Topic-Based — ELB", "Complete the full Elastic Load Balancing topic test", 60, "practice", "resilience", true),
+    session("2026-07-23", "Topic-Based — CloudFront", "Complete the full CloudFront topic test", 60, "practice", "performance", true),
+    session("2026-07-23", "Topic-Based — Lambda", "Complete the full Lambda topic test", 60, "practice", "cost", true),
+    session("2026-07-24", "Topic-Based — SQS", "Complete the full SQS topic test", 60, "practice", "resilience", true)
   ]),
-  phase("mastery", "02", "Service mastery", "Jul 27 — Aug 9", "Connect individual AWS services into secure, resilient architectures.", [
-    session("2026-07-27", "Serverless patterns", "Lambda, API Gateway, concurrency and integrations", 60, "learn", "performance"),
-    session("2026-07-28", "Messaging & decoupling", "SQS, SNS, EventBridge, Step Functions and MQ", 60, "learn", "resilience"),
-    session("2026-07-29", "DNS & global delivery", "Route 53, CloudFront and Global Accelerator", 60, "learn", "performance"),
-    session("2026-07-30", "Encryption & secrets", "KMS, CloudHSM, ACM, Secrets Manager and Parameter Store", 90, "learn", "security"),
-    session("2026-07-31", "Security visibility", "CloudTrail, Config, GuardDuty, Inspector, Macie and Security Hub", 90, "learn", "security"),
-    session("2026-08-01", "Security domain test", "Domain 1 question set · target 75%+", 90, "practice", "security", true),
-    session("2026-08-02", "Security test review", "Explain why each distractor is wrong", 90, "review", "security"),
-    session("2026-08-03", "High availability patterns", "Multi-AZ, Multi-Region, failover and health checks", 60, "learn", "resilience"),
-    session("2026-08-04", "Disaster recovery", "Backup/restore, pilot light, warm standby and active-active", 60, "learn", "resilience"),
-    session("2026-08-05", "Migration & transfer", "DMS, SCT, DataSync, Snow Family and Transfer Family", 60, "learn", "resilience"),
-    session("2026-08-06", "Observability & operations", "CloudWatch metrics, logs, alarms and Systems Manager", 90, "learn", "performance"),
-    session("2026-08-07", "Cost optimization patterns", "Compute, storage, data transfer and Savings Plans", 90, "learn", "cost"),
-    session("2026-08-08", "Resilience domain test", "Domain 2 question set · target 75%+", 90, "practice", "resilience", true),
-    session("2026-08-09", "Resilience review + recall", "Review misses, then blank-page architecture recall", 90, "review", "resilience")
+  phase("review-mode", "02", "Review Mode", "Jul 25 — Aug 2", "Complete every set untimed, reading every explanation as you go.", [
+    session("2026-07-25", "Review Mode — Diagnostic Test", "Work through the diagnostic and read every explanation", 120, "practice", "general", true),
+    session("2026-07-25", "Diagnostic wrong-answer review", "Revisit every miss and uncertain guess", 60, "review"),
+    session("2026-07-26", "Review Mode — Set 1", "Untimed practice · read every explanation", 120, "practice", "general", true),
+    session("2026-07-26", "Set 1 wrong-answer review", "Log the service and reason for every miss", 45, "review"),
+    session("2026-07-27", "Review Mode — Set 2", "Untimed practice · read every explanation", 120, "practice", "general", true),
+    session("2026-07-27", "Set 2 wrong-answer review", "Log the service and reason for every miss", 45, "review"),
+    session("2026-07-28", "Review Mode — Set 3", "Untimed practice · read every explanation", 120, "practice", "general", true),
+    session("2026-07-28", "Set 3 wrong-answer review", "Log the service and reason for every miss", 45, "review"),
+    session("2026-07-29", "Review Mode — Set 4", "Untimed practice · read every explanation", 120, "practice", "general", true),
+    session("2026-07-29", "Set 4 wrong-answer review", "Log the service and reason for every miss", 45, "review"),
+    session("2026-07-30", "Review Mode — Set 5", "Untimed practice · read every explanation", 120, "practice", "general", true),
+    session("2026-07-30", "Set 5 wrong-answer review", "Log the service and reason for every miss", 45, "review"),
+    session("2026-07-31", "Review Mode — Set 6", "Untimed practice · read every explanation", 120, "practice", "general", true),
+    session("2026-07-31", "Set 6 wrong-answer review", "Log the service and reason for every miss", 45, "review"),
+    session("2026-08-01", "Review Mode — Set 7", "Untimed practice · read every explanation", 120, "practice", "general", true),
+    session("2026-08-01", "Set 7 wrong-answer review", "Log the service and reason for every miss", 45, "review"),
+    session("2026-08-02", "Bonus Review Mode — Set 8", "Untimed bonus set · read every explanation", 120, "practice", "general", true),
+    session("2026-08-02", "Bonus Set 8 wrong-answer review", "Log the service and reason for every miss", 45, "review")
   ]),
-  phase("domains", "03", "Domain strength", "Aug 10 — Aug 23", "Turn knowledge into fast decisions across all four exam domains.", [
-    session("2026-08-10", "Secure architecture scenarios", "Least privilege, boundaries and multi-account design", 60, "review", "security"),
-    session("2026-08-11", "Resilient architecture scenarios", "Remove single points of failure and choose recovery targets", 60, "review", "resilience"),
-    session("2026-08-12", "Performance scenarios", "Match workloads to compute, database and storage", 60, "review", "performance"),
-    session("2026-08-13", "Cost scenarios", "Choose the lowest-cost option that meets requirements", 90, "review", "cost"),
-    session("2026-08-14", "Mixed scenario sprint", "30 questions · 75 seconds per question", 75, "practice", "general", true),
-    session("2026-08-15", "Full mock exam #1", "65 questions · 130 minutes · exam conditions", 130, "practice", "general", true),
-    session("2026-08-16", "Mock #1 deep review", "Log service gap, reasoning error and clue missed", 150, "review"),
-    session("2026-08-17", "Weak-area repair: set A", "Top two services from Mock #1", 60, "review", "general"),
-    session("2026-08-18", "Weak-area repair: set B", "Next two services from Mock #1", 60, "review", "general"),
-    session("2026-08-19", "Architecture comparison drill", "Build quick tables for commonly confused services", 60, "review", "performance"),
-    session("2026-08-20", "Security + resilience sprint", "35 mixed domain questions", 90, "practice", "security", true),
-    session("2026-08-21", "Performance + cost sprint", "35 mixed domain questions", 90, "practice", "cost", true),
-    session("2026-08-22", "Full mock exam #2", "65 questions · target 78%+", 130, "practice", "general", true),
-    session("2026-08-23", "Mock #2 deep review", "Resolve every miss and every low-confidence guess", 150, "review")
+  phase("timed-mode", "03", "Timed Mode", "Aug 3 — Aug 11", "Repeat the same test flow under real exam pressure: 65 questions in 130 minutes.", [
+    session("2026-08-03", "Timed Mode — Diagnostic Test", "65 questions · 130 minutes · exam conditions", 130, "practice", "general", true),
+    session("2026-08-03", "Timed diagnostic wrong-answer review", "Review misses after the timer is finished", 60, "review"),
+    session("2026-08-04", "Timed Mode — Set 1", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-04", "Timed Set 1 wrong-answer review", "Review misses and low-confidence guesses", 60, "review"),
+    session("2026-08-05", "Timed Mode — Set 2", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-05", "Timed Set 2 wrong-answer review", "Review misses and low-confidence guesses", 60, "review"),
+    session("2026-08-06", "Timed Mode — Set 3", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-06", "Timed Set 3 wrong-answer review", "Review misses and low-confidence guesses", 60, "review"),
+    session("2026-08-07", "Timed Mode — Set 4", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-07", "Timed Set 4 wrong-answer review", "Review misses and low-confidence guesses", 60, "review"),
+    session("2026-08-08", "Timed Mode — Set 5", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-08", "Timed Set 5 wrong-answer review", "Review misses and low-confidence guesses", 60, "review"),
+    session("2026-08-09", "Timed Mode — Set 6", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-09", "Timed Set 6 wrong-answer review", "Review misses and low-confidence guesses", 60, "review"),
+    session("2026-08-10", "Timed Mode — Set 7", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-10", "Timed Set 7 wrong-answer review", "Review misses and low-confidence guesses", 60, "review"),
+    session("2026-08-11", "Bonus Timed Mode — Set 8", "65 questions · 130 minutes", 130, "practice", "general", true),
+    session("2026-08-11", "Bonus Timed Set 8 review", "Review misses and low-confidence guesses", 60, "review")
   ]),
-  phase("simulation", "04", "Exam simulation", "Aug 24 — Sep 1", "Build pace, confidence and a repeatable exam-day method.", [
-    session("2026-08-24", "Decision keywords drill", "Most secure, least operational overhead, most cost-effective", 60, "review", "general"),
-    session("2026-08-25", "Weak-area repair: final list", "Only unresolved services from the error log", 60, "review", "general"),
-    session("2026-08-26", "Timed 30-question set", "Practice flagging and moving on", 60, "practice", "general", true),
-    session("2026-08-27", "Timed-set review", "Focus on reasoning and time lost", 90, "review"),
-    session("2026-08-28", "Flashcard consolidation", "Retire known cards; keep only high-value gaps", 90, "review"),
-    session("2026-08-29", "Full mock exam #3", "65 questions · target 82%+", 130, "practice", "general", true),
-    session("2026-08-30", "Mock #3 deep review", "Final error log and confidence check", 150, "review"),
-    session("2026-08-31", "Final domain tune-up", "One short drill for the lowest-scoring domain", 60, "practice", "general", true),
-    session("2026-09-01", "Exam strategy rehearsal", "Two-pass method, timing checkpoints and flag rules", 45, "review")
+  phase("section-tests", "04", "Section-based tests", "Aug 12 — Aug 15", "Finish with one dedicated test for each official exam domain.", [
+    session("2026-08-12", "Section — Design Secure Architectures", "Complete the full security-domain test", 120, "practice", "security", true),
+    session("2026-08-12", "Secure Architectures wrong-answer review", "Review every missed security scenario", 60, "review", "security"),
+    session("2026-08-13", "Section — Design Resilient Architectures", "Complete the full resilience-domain test", 120, "practice", "resilience", true),
+    session("2026-08-13", "Resilient Architectures wrong-answer review", "Review every missed resilience scenario", 60, "review", "resilience"),
+    session("2026-08-14", "Section — Design High-Performing Architectures", "Complete the full performance-domain test", 120, "practice", "performance", true),
+    session("2026-08-14", "High-Performing Architectures review", "Review every missed performance scenario", 60, "review", "performance"),
+    session("2026-08-15", "Section — Design Cost-Optimized Architectures", "Complete the full cost-domain test", 120, "practice", "cost", true),
+    session("2026-08-15", "Cost-Optimized Architectures review", "Review every missed cost scenario", 60, "review", "cost")
   ]),
-  phase("taper", "05", "Taper & arrive ready", "Sep 2 — Sep 5", "Reduce load, protect sleep and walk in with a calm plan.", [
-    session("2026-09-02", "Final cheat-sheet pass", "Architecture patterns, limits and key comparisons", 45, "review", "general"),
-    session("2026-09-03", "Light confidence review", "20 familiar questions only · stop after 45 minutes", 45, "review", "general", true),
-    session("2026-09-04", "Full rest + exam setup", "Confirm ID, route, check-in details and sleep early", 15, "rest"),
+  phase("consolidation", "05", "Consolidation & taper", "Aug 16 — Sep 5", "Cycle through flashcards, wrong answers and weak areas, then protect the final days.", [
+    session("2026-08-16", "Flashcards — Part 1", "Full review of the first flashcard set", 90, "review"),
+    session("2026-08-16", "Flashcards — Part 2", "Full review of the second flashcard set", 90, "review"),
+    session("2026-08-17", "Wrong answers — topic tests", "Mega-review every missed topic-based question", 90, "review"),
+    session("2026-08-17", "Wrong answers — Review Mode", "Mega-review every missed Review Mode question", 90, "review"),
+    session("2026-08-18", "Wrong answers — Timed Mode", "Mega-review every missed timed question", 90, "review"),
+    session("2026-08-18", "Wrong answers — section tests", "Mega-review every missed section question", 90, "review"),
+    session("2026-08-19", "Section quick-pass — Secure + Resilient", "Rapid review of Domains 1 and 2", 90, "review", "security"),
+    session("2026-08-20", "Section quick-pass — Performance + Cost", "Rapid review of Domains 3 and 4", 90, "review", "performance"),
+    session("2026-08-21", "Weak-area drill — lowest services", "Target the services with the lowest scores", 90, "review"),
+    session("2026-08-22", "Final timed test — benchmark #1", "65 questions · 130 minutes · exam conditions", 130, "practice", "general", true),
+    session("2026-08-23", "Benchmark #1 wrong-answer review", "Resolve every miss and uncertain guess", 120, "review"),
+    session("2026-08-24", "Weak-area drill — benchmark gaps", "Drill only the services flagged yesterday", 60, "review"),
+    session("2026-08-25", "Flashcards — rapid-fire pass", "Both parts, keeping only cards still difficult", 60, "review"),
+    session("2026-08-26", "Cheat-sheet pass", "Service comparisons, limits and exam keywords", 60, "review"),
+    session("2026-08-27", "Section quick-pass — all domains", "One final structured pass through all four domains", 90, "review"),
+    session("2026-08-28", "Weak-area drill — final gaps", "Close the last unresolved knowledge gaps", 90, "review"),
+    session("2026-08-29", "Final timed test — benchmark #2", "65 questions · 130 minutes · final full simulation", 130, "practice", "general", true),
+    session("2026-08-30", "Benchmark #2 wrong-answer review", "Final review of misses and low-confidence guesses", 120, "review"),
+    session("2026-08-31", "Weak-area drill — final test flags", "Only topics flagged by the final simulation", 60, "review"),
+    session("2026-09-01", "Flashcards — final rapid-fire", "Both parts once, without adding new material", 60, "review"),
+    session("2026-09-02", "Last study day — cheat sheet", "Light review only; stop while confidence is high", 45, "review"),
+    session("2026-09-03", "REST — no studying", "Protect sleep and let the material settle", 15, "rest"),
+    session("2026-09-04", "REST — exam setup", "Confirm ID, route, check-in details and sleep early", 15, "rest"),
     session("2026-09-05", "AWS SAA-C03 exam", "Breathe, read the requirement twice, trust the process", 130, "exam")
   ])
 ];
@@ -327,7 +357,7 @@ function updateOverview(today) {
   const remaining = Math.max(0, daysUntil(EXAM_DATE));
   const due = studySessions.filter((item) => item.date <= today);
   const dueDone = due.filter((item) => getItemState(item.id).done).length;
-  const nextMock = studySessions.find((item) => item.date >= today && item.type === "practice" && item.title.toLowerCase().includes("full mock") && !getItemState(item.id).done);
+  const nextMock = studySessions.find((item) => item.date >= today && item.type === "practice" && (item.title.startsWith("Timed Mode") || item.title.includes("timed test")) && !getItemState(item.id).done);
 
   $("#days-left").textContent = remaining;
   $("#done-count").textContent = progress.done;

@@ -5,7 +5,7 @@ A focused, responsive study tracker for the AWS Certified Solutions Architect �
 ## What is included
 
 - A complete 49-day plan from July 18 through exam day
-- Five phases: reset, service mastery, domain strength, exam simulation, and taper
+- The original five-stage practice flow: topic-based tests, Review Mode, Timed Mode, section-based tests, and consolidation
 - A focused “today” view with session duration and next action
 - Full mock exams, domain drills, review days, and protected rest
 - Completion dates, optional practice scores, and private study notes
