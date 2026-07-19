@@ -14,6 +14,8 @@ for (const file of ["index.html", "app.js", "styles.css"]) {
   await cp(resolve(root, file), resolve(client, file));
 }
 
+await cp(resolve(root, "public", "og.png"), resolve(client, "og.png"));
+
 await writeFile(resolve(server, "index.js"), `export default {
   async fetch(request, env) {
     return env.ASSETS.fetch(request);

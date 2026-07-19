@@ -122,6 +122,15 @@ const PHASES = [
 const allSessions = PHASES.flatMap((p) => p.sessions.map((s, index) => ({ ...s, id: `${p.id}-${s.date}-${index}`, phaseId: p.id, phaseTitle: p.title })));
 const studySessions = allSessions.filter((s) => s.type !== "rest" && s.type !== "exam");
 const domainNames = { security: "Secure", resilience: "Resilient", performance: "High-performing", cost: "Cost-optimized" };
+const LAST_STUDY_DATE = "2026-09-02";
+const PROTECTED_DATES = new Set(["2026-09-03", "2026-09-04", EXAM_DATE]);
+const modeLabels = {
+  topic: "Topic tests",
+  "review-mode": "Review Mode",
+  "timed-mode": "Timed Mode",
+  "section-tests": "Section tests",
+  consolidation: "Final benchmarks"
+};
 
 let db;
 let docRef;
@@ -154,6 +163,10 @@ function formatMinutes(minutes) {
   const hours = Math.floor(minutes / 60);
   const remainder = minutes % 60;
   return remainder ? `${hours} hr ${remainder} min` : `${hours} hr`;
+}
+
+function escapeHTML(value = "") {
+  return String(value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
 }
 
 function getItemState(id) {
@@ -258,6 +271,61 @@ function daysUntil(date) {
   return Math.ceil((dateFromISO(date) - today) / 86400000);
 }
 
+function addDaysISO(value, amount = 1) {
+  const date = dateFromISO(value);
+  date.setDate(date.getDate() + amount);
+  return localDateISO(date);
+}
+
+function dailyStudyCapacity(value) {
+  const day = dateFromISO(value).getDay();
+  if (day === 0 || day === 6) return 270;
+  if (day === 4 || day === 5) return 225;
+  return 195;
+}
+
+function isSmartScheduleEnabled() {
+  return state.settings?.smartSchedule !== false;
+}
+
+function getScheduledSessions(today = localDateISO()) {
+  if (!isSmartScheduleEnabled()) {
+    return allSessions.map((item) => ({ ...item, plannedDate: item.date, moved: false }));
+  }
+
+  const loadByDate = {};
+  allSessions.forEach((item) => {
+    const completedOn = getItemState(item.id).done ? getItemState(item.id).date : null;
+    if (completedOn && completedOn >= today && completedOn <= LAST_STUDY_DATE) {
+      loadByDate[completedOn] = (loadByDate[completedOn] || 0) + item.duration;
+    }
+  });
+  let previousDate = today;
+
+  return allSessions.map((item) => {
+    const itemState = getItemState(item.id);
+    if (itemState.done || item.type === "rest" || item.type === "exam") {
+      return { ...item, plannedDate: item.date, moved: false };
+    }
+
+    let scheduledDate = item.date < today ? today : item.date;
+    if (scheduledDate < previousDate) scheduledDate = previousDate;
+
+    while (
+      scheduledDate < LAST_STUDY_DATE &&
+      (PROTECTED_DATES.has(scheduledDate) || ((loadByDate[scheduledDate] || 0) + item.duration > dailyStudyCapacity(scheduledDate)))
+    ) {
+      scheduledDate = addDaysISO(scheduledDate);
+    }
+
+    if (scheduledDate > LAST_STUDY_DATE) scheduledDate = LAST_STUDY_DATE;
+    loadByDate[scheduledDate] = (loadByDate[scheduledDate] || 0) + item.duration;
+    previousDate = scheduledDate;
+
+    return { ...item, plannedDate: item.date, date: scheduledDate, moved: scheduledDate !== item.date };
+  });
+}
+
 function progressFor(sessions) {
   const trackable = sessions.filter((s) => s.type !== "rest" && s.type !== "exam");
   const done = trackable.filter((s) => getItemState(s.id).done).length;
@@ -282,20 +350,23 @@ function taskMarkup(item, focus = false) {
   const itemState = getItemState(item.id);
   const done = Boolean(itemState.done);
   const score = itemState.score !== undefined && itemState.score !== "" ? `<span class="task-score">${itemState.score}%</span>` : "";
+  const missed = Number(itemState.errorLog?.missed || 0);
+  const missedBadge = missed > 0 ? `<span class="mistake-badge">${missed} missed</span>` : "";
+  const movedLabel = item.moved ? `<span class="moved-date" title="Originally ${formatDate(item.plannedDate)}">↻ ${formatDate(item.date, { weekday: "short", month: "short", day: "numeric" })}</span>` : `<span>${formatDate(item.date, { weekday: "short", month: "short", day: "numeric" })}</span>`;
   return `
-    <article class="task-row ${done ? "done" : ""} ${focus ? "focus-task" : ""}" data-id="${item.id}">
-      <button class="task-check" type="button" aria-label="${done ? "Mark incomplete" : "Mark complete"}: ${item.title}" data-check-id="${item.id}"><span>✓</span></button>
+    <article class="task-row ${done ? "done" : ""} ${item.moved ? "rescheduled" : ""} ${focus ? "focus-task" : ""}" data-id="${item.id}">
+      <button class="task-check" type="button" aria-label="${done ? "Mark incomplete" : "Complete"}: ${escapeHTML(item.title)}" data-check-id="${item.id}"><span>✓</span></button>
       <button class="task-content" type="button" data-open-id="${item.id}">
-        <span class="task-topline"><span class="task-type ${item.type}">${typeLabel(item.type)}</span><span>${formatDate(item.date, { weekday: "short", month: "short", day: "numeric" })}</span></span>
-        <strong>${item.title}</strong>
-        <small>${item.detail}</small>
+        <span class="task-topline"><span class="task-type ${item.type}">${typeLabel(item.type)}</span>${movedLabel}</span>
+        <strong>${escapeHTML(item.title)}</strong>
+        <small>${escapeHTML(item.detail)}</small>
       </button>
-      <div class="task-tail">${score}<span>${formatMinutes(item.duration)}</span><button type="button" data-open-id="${item.id}" aria-label="Open session details">↗</button></div>
+      <div class="task-tail">${missedBadge}${score}<span>${formatMinutes(item.duration)}</span><button type="button" data-open-id="${item.id}" aria-label="Open session details">↗</button></div>
     </article>`;
 }
 
-function renderFocus(today) {
-  const todaySessions = allSessions.filter((item) => item.date === today);
+function renderFocus(today, scheduledSessions) {
+  const todaySessions = scheduledSessions.filter((item) => item.date === today);
   const unfinishedToday = todaySessions.filter((item) => !getItemState(item.id).done);
   let focusItems = unfinishedToday;
   let title = "Today’s plan";
@@ -305,8 +376,8 @@ function renderFocus(today) {
     title = "Today — complete";
   }
   if (!focusItems.length) {
-    const nextDate = allSessions.find((item) => item.date > today && !getItemState(item.id).done)?.date;
-    focusItems = allSessions.filter((item) => item.date === nextDate);
+    const nextDate = scheduledSessions.find((item) => item.date > today && !getItemState(item.id).done)?.date;
+    focusItems = scheduledSessions.filter((item) => item.date === nextDate);
     title = nextDate ? `Up next · ${formatDate(nextDate, { weekday: "long", month: "long", day: "numeric" })}` : "Plan complete";
   }
 
@@ -315,12 +386,13 @@ function renderFocus(today) {
   $("#focus-list").innerHTML = focusItems.length ? focusItems.map((item) => taskMarkup(item, true)).join("") : `<div class="empty-state"><strong>Every session is complete.</strong><p>Protect your sleep and take that confidence into exam day.</p></div>`;
 }
 
-function renderSchedule(today) {
+function renderSchedule(today, scheduledSessions = getScheduledSessions(today)) {
   const container = $("#schedule-list");
   container.innerHTML = PHASES.map((currentPhase) => {
-    const status = phaseStatus(currentPhase, today);
-    const progress = progressFor(currentPhase.sessions);
-    const filteredSessions = currentPhase.sessions.filter((item) => activeFilter === "all" || item.type === activeFilter);
+    const phaseSessions = scheduledSessions.filter((item) => item.phaseId === currentPhase.id);
+    const status = phaseStatus({ ...currentPhase, sessions: phaseSessions }, today);
+    const progress = progressFor(phaseSessions);
+    const filteredSessions = phaseSessions.filter((item) => activeFilter === "all" || item.type === activeFilter);
     if (!filteredSessions.length) return "";
     const open = status === "current" || activeFilter !== "all";
     return `
@@ -331,9 +403,135 @@ function renderSchedule(today) {
           <span class="phase-progress"><strong>${progress.pct}%</strong><span>${progress.done}/${progress.total}</span></span>
           <span class="phase-chevron">⌄</span>
         </summary>
-        <div class="phase-body">${filteredSessions.map((item) => taskMarkup({ ...item, id: allSessions.find((s) => s.phaseId === currentPhase.id && s.date === item.date && s.title === item.title).id })).join("")}</div>
+        <div class="phase-body">${filteredSessions.map((item) => taskMarkup(item)).join("")}</div>
       </details>`;
   }).join("");
+}
+
+function renderCatchUp(today, scheduledSessions) {
+  const enabled = isSmartScheduleEnabled();
+  const overdue = studySessions.filter((item) => item.date < today && !getItemState(item.id).done);
+  const moved = scheduledSessions.filter((item) => item.moved && !getItemState(item.id).done);
+  const lastScheduled = [...scheduledSessions].reverse().find((item) => item.type !== "rest" && item.type !== "exam" && !getItemState(item.id).done);
+  const dailyLoads = scheduledSessions.filter((item) => item.type !== "rest" && item.type !== "exam" && !getItemState(item.id).done).reduce((loads, item) => ({ ...loads, [item.date]: (loads[item.date] || 0) + item.duration }), {});
+  const overloadedDates = Object.entries(dailyLoads).filter(([date, minutes]) => minutes > dailyStudyCapacity(date));
+  const toggle = $("#smart-schedule-toggle");
+  toggle.checked = enabled;
+  $("#catchup").classList.toggle("active", enabled);
+
+  if (!enabled) {
+    $("#catchup-title").textContent = "Original dates are locked.";
+    $("#catchup-message").textContent = overdue.length ? `${overdue.length} overdue ${overdue.length === 1 ? "session remains" : "sessions remain"} on the original roadmap.` : "Your original roadmap is unchanged.";
+    return;
+  }
+
+  if (!overdue.length) {
+    $("#catchup-title").textContent = "You’re following the original flow.";
+    $("#catchup-message").textContent = "Nothing needs moving. Rest days and exam day remain protected.";
+    return;
+  }
+
+  if (overloadedDates.length) {
+    const [date, minutes] = overloadedDates.at(-1);
+    $("#catchup-title").textContent = "Your remaining plan is at capacity.";
+    $("#catchup-message").textContent = `${overdue.length} overdue ${overdue.length === 1 ? "session was" : "sessions were"} moved forward, but ${formatMinutes(minutes)} now lands on ${formatDate(date)}. Complete catch-up work early when possible; rest and exam days are still protected.`;
+    return;
+  }
+
+  $("#catchup-title").textContent = `${overdue.length} overdue ${overdue.length === 1 ? "session has" : "sessions have"} been rebalanced.`;
+  $("#catchup-message").textContent = `${moved.length} upcoming ${moved.length === 1 ? "session now has" : "sessions now have"} a smart date. Your practice order is preserved${lastScheduled ? ` through ${formatDate(lastScheduled.date)}` : ""}, before the protected rest days.`;
+}
+
+function notebookEntries() {
+  return allSessions
+    .filter((item) => item.scoreable)
+    .map((item) => ({ item, itemState: getItemState(item.id), log: getItemState(item.id).errorLog || {} }))
+    .filter(({ log }) => Number(log.missed || 0) > 0 || log.services || log.reason || log.principle)
+    .sort((a, b) => (b.itemState.date || b.item.date).localeCompare(a.itemState.date || a.item.date));
+}
+
+function renderNotebook() {
+  const entries = notebookEntries();
+  const totalMissed = entries.reduce((sum, entry) => sum + Number(entry.log.missed || 0), 0);
+  const services = new Map();
+  const reasons = new Map();
+
+  entries.forEach(({ log }) => {
+    String(log.services || "").split(",").map((value) => value.trim()).filter(Boolean).forEach((service) => {
+      const key = service.toLowerCase();
+      services.set(key, { label: service, count: (services.get(key)?.count || 0) + 1 });
+    });
+    if (log.reason) reasons.set(log.reason, (reasons.get(log.reason) || 0) + 1);
+  });
+
+  const topServices = [...services.values()].sort((a, b) => b.count - a.count).slice(0, 4);
+  const commonReason = [...reasons.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "Not enough data";
+  $("#notebook-count").textContent = `${totalMissed} ${totalMissed === 1 ? "mistake" : "mistakes"} logged`;
+  $("#notebook-summary").innerHTML = `
+    <article><small>Total misses</small><strong>${totalMissed}</strong><span>Across ${entries.length} ${entries.length === 1 ? "test" : "tests"}</span></article>
+    <article><small>Recurring services</small><strong>${services.size}</strong><span>${topServices.length ? topServices.map((entry) => escapeHTML(entry.label)).join(" · ") : "Add services when reviewing"}</span></article>
+    <article><small>Most common cause</small><strong class="summary-text">${escapeHTML(commonReason)}</strong><span>Use this to change your test strategy</span></article>`;
+
+  if (!entries.length) {
+    $("#notebook-list").innerHTML = `<div class="empty-state notebook-empty"><strong>Your notebook is ready.</strong><p>Complete a practice test and add its missed questions, weak services, and the principle you want to remember.</p></div>`;
+    return;
+  }
+
+  $("#notebook-list").innerHTML = entries.map(({ item, itemState, log }) => {
+    const confidence = Number(log.confidence || 0);
+    const dots = [1, 2, 3, 4, 5].map((value) => `<span class="${value <= confidence ? "filled" : ""}"></span>`).join("");
+    return `
+      <button class="notebook-entry" type="button" data-open-id="${item.id}">
+        <span class="notebook-date">${formatDate(itemState.date || item.date, { month: "short", day: "numeric" })}</span>
+        <span class="notebook-copy"><small>${escapeHTML(item.phaseTitle)} · ${Number(log.missed || 0)} missed</small><strong>${escapeHTML(item.title)}</strong><em>${escapeHTML(log.services || "No services tagged")}</em>${log.principle ? `<p>${escapeHTML(log.principle)}</p>` : ""}</span>
+        <span class="notebook-meta"><b>${escapeHTML(log.reason || "Unclassified")}</b><span class="confidence-dots" aria-label="Confidence ${confidence || "not rated"} out of 5">${dots}</span></span>
+      </button>`;
+  }).join("");
+}
+
+function getScoreEntries() {
+  return allSessions
+    .filter((item) => item.scoreable)
+    .map((item) => ({ item, itemState: getItemState(item.id), score: Number(getItemState(item.id).score) }))
+    .filter(({ itemState, score }) => itemState.done && Number.isFinite(score) && score >= 0 && itemState.score !== "")
+    .sort((a, b) => (a.itemState.date || a.item.date).localeCompare(b.itemState.date || b.item.date));
+}
+
+function average(values) {
+  return values.length ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length) : null;
+}
+
+function renderAnalytics() {
+  const entries = getScoreEntries();
+  const scores = entries.map((entry) => entry.score);
+  const overall = average(scores);
+  const recent = average(scores.slice(-3));
+  const previous = average(scores.slice(-6, -3));
+  const best = scores.length ? Math.max(...scores) : null;
+  const trend = recent !== null && previous !== null ? recent - previous : null;
+  const loggedTests = notebookEntries().length;
+
+  $("#analytics-summary").innerHTML = `
+    <article><small>Average score</small><strong>${overall === null ? "—" : `${overall}%`}</strong><span>${scores.length} scored ${scores.length === 1 ? "test" : "tests"}</span></article>
+    <article><small>Recent average</small><strong>${recent === null ? "—" : `${recent}%`}</strong><span>Last three results</span></article>
+    <article><small>Best score</small><strong>${best === null ? "—" : `${best}%`}</strong><span>Your current high mark</span></article>
+    <article><small>Reviewed tests</small><strong>${loggedTests}</strong><span>With wrong-answer details</span></article>`;
+
+  $("#score-trend-label").textContent = trend === null ? "Add six scores to reveal a trend" : trend > 0 ? `↑ ${trend} points vs previous three` : trend < 0 ? `↓ ${Math.abs(trend)} points vs previous three` : "Holding steady";
+
+  $("#mode-analytics").innerHTML = Object.entries(modeLabels).map(([phaseId, label]) => {
+    const modeEntries = entries.filter(({ item }) => item.phaseId === phaseId);
+    const modeAverage = average(modeEntries.map((entry) => entry.score));
+    const total = allSessions.filter((item) => item.phaseId === phaseId && item.scoreable).length;
+    return `<div class="mode-row"><div><span>${label}</span><small>${modeEntries.length}/${total} scored</small></div><div class="mode-track"><span style="width:${modeAverage || 0}%"></span></div><strong>${modeAverage === null ? "—" : `${modeAverage}%`}</strong></div>`;
+  }).join("");
+
+  const recentEntries = entries.slice(-12);
+  if (!recentEntries.length) {
+    $("#score-history").innerHTML = `<div class="empty-chart"><span></span><span></span><span></span><span></span><p>Your score history will appear here.</p></div>`;
+    return;
+  }
+  $("#score-history").innerHTML = recentEntries.map(({ item, itemState, score }) => `<div class="score-column" title="${escapeHTML(item.title)}: ${score}%"><strong>${score}</strong><div><span style="height:${Math.max(4, score)}%"></span></div><small>${formatDate(itemState.date || item.date, { month: "short", day: "numeric" })}</small></div>`).join("");
 }
 
 function renderReadiness() {
@@ -352,12 +550,13 @@ function renderReadiness() {
   $("#readiness-score").textContent = `${Math.round(combined / 4)}%`;
 }
 
-function updateOverview(today) {
+function updateOverview(today, scheduledSessions) {
   const progress = progressFor(studySessions);
   const remaining = Math.max(0, daysUntil(EXAM_DATE));
-  const due = studySessions.filter((item) => item.date <= today);
+  const scheduledStudy = scheduledSessions.filter((item) => item.type !== "rest" && item.type !== "exam");
+  const due = scheduledStudy.filter((item) => item.date <= today);
   const dueDone = due.filter((item) => getItemState(item.id).done).length;
-  const nextMock = studySessions.find((item) => item.date >= today && item.type === "practice" && (item.title.startsWith("Timed Mode") || item.title.includes("timed test")) && !getItemState(item.id).done);
+  const nextMock = scheduledStudy.find((item) => item.date >= today && item.type === "practice" && (item.title.startsWith("Timed Mode") || item.title.includes("timed test")) && !getItemState(item.id).done);
 
   $("#days-left").textContent = remaining;
   $("#done-count").textContent = progress.done;
@@ -382,12 +581,16 @@ function bindDynamicEvents(root = document) {
 function render() {
   const today = localDateISO();
   const hour = new Date().getHours();
+  const scheduledSessions = getScheduledSessions(today);
   $("#greeting").textContent = hour < 12 ? "Good morning." : hour < 18 ? "Good afternoon." : "Good evening.";
   $("#current-date").textContent = new Date().toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric" });
-  renderFocus(today);
-  renderSchedule(today);
+  renderCatchUp(today, scheduledSessions);
+  renderFocus(today, scheduledSessions);
+  renderSchedule(today, scheduledSessions);
+  renderNotebook();
+  renderAnalytics();
   renderReadiness();
-  updateOverview(today);
+  updateOverview(today, scheduledSessions);
   bindDynamicEvents();
 }
 
@@ -395,7 +598,14 @@ function toggleItem(id) {
   if (!state.items) state.items = {};
   const current = getItemState(id);
   if (current.done) delete state.items[id];
-  else state.items[id] = { ...current, done: true, date: localDateISO() };
+  else {
+    const item = allSessions.find((candidate) => candidate.id === id);
+    if (item?.scoreable) {
+      openModal(id);
+      return;
+    }
+    state.items[id] = { ...current, done: true, date: localDateISO() };
+  }
   saveState(current.done ? "Session moved back to your plan." : "Session complete. Nice work.");
 }
 
@@ -404,13 +614,22 @@ function openModal(id) {
   if (!item) return;
   activeId = id;
   const itemState = getItemState(id);
+  const scheduledItem = getScheduledSessions().find((candidate) => candidate.id === id) || item;
+  const errorLog = itemState.errorLog || {};
   $("#modal-phase").textContent = item.phaseTitle;
   $("#modal-title").textContent = item.title;
-  $("#modal-meta").textContent = `${formatDate(item.date, { weekday: "long", month: "long", day: "numeric" })} · ${formatMinutes(item.duration)} · ${typeLabel(item.type)}`;
+  $("#modal-meta").textContent = `${formatDate(scheduledItem.date, { weekday: "long", month: "long", day: "numeric" })}${scheduledItem.moved ? ` · originally ${formatDate(item.date)}` : ""} · ${formatMinutes(item.duration)} · ${typeLabel(item.type)}`;
   $("#modal-date").value = itemState.date || localDateISO();
   $("#modal-score").value = itemState.score ?? "";
   $("#modal-note").value = itemState.note || "";
+  $("#modal-missed").value = errorLog.missed ?? "";
+  $("#modal-guessed").value = errorLog.guessed ?? "";
+  $("#modal-services").value = errorLog.services || "";
+  $("#modal-reason").value = errorLog.reason || "";
+  $("#modal-principle").value = errorLog.principle || "";
+  $("#modal-confidence").value = errorLog.confidence || "";
   $("#score-field").hidden = !item.scoreable;
+  $("#practice-fields").hidden = !item.scoreable;
   $("#modal-clear-btn").style.visibility = itemState.done ? "visible" : "hidden";
   $("#modal-bg").classList.add("open");
   window.setTimeout(() => $("#modal-date").focus(), 80);
@@ -423,6 +642,7 @@ function closeModal() {
 
 function saveModal() {
   if (!activeId) return;
+  const item = allSessions.find((candidate) => candidate.id === activeId);
   const score = $("#modal-score").value;
   if (score && (Number(score) < 0 || Number(score) > 100)) {
     showToast("Enter a score between 0 and 100.", "warning");
@@ -433,7 +653,17 @@ function saveModal() {
     done: true,
     date: $("#modal-date").value || localDateISO(),
     score: score === "" ? "" : Number(score),
-    note: $("#modal-note").value.trim()
+    note: $("#modal-note").value.trim(),
+    ...(item?.scoreable ? {
+      errorLog: {
+        missed: $("#modal-missed").value === "" ? 0 : Number($("#modal-missed").value),
+        guessed: $("#modal-guessed").value === "" ? 0 : Number($("#modal-guessed").value),
+        services: $("#modal-services").value.trim(),
+        reason: $("#modal-reason").value,
+        principle: $("#modal-principle").value.trim(),
+        confidence: $("#modal-confidence").value === "" ? "" : Number($("#modal-confidence").value)
+      }
+    } : {})
   };
   closeModal();
   saveState("Session saved. Your plan is up to date.");
@@ -455,7 +685,7 @@ function closeResetConfirm() {
 }
 
 function resetAll() {
-  state = { items: {} };
+  state = { items: {}, settings: { smartSchedule: true } };
   closeResetConfirm();
   saveState("Your September 5 plan has been reset.");
 }
@@ -469,6 +699,11 @@ function initStaticEvents() {
   $("#reset-cancel").addEventListener("click", closeResetConfirm);
   $("#reset-confirm").addEventListener("click", resetAll);
   $("#confirm-bg").addEventListener("click", (event) => { if (event.target.id === "confirm-bg") closeResetConfirm(); });
+  $("#smart-schedule-toggle").addEventListener("change", (event) => {
+    if (!state.settings) state.settings = {};
+    state.settings.smartSchedule = event.target.checked;
+    saveState(event.target.checked ? "Smart catch-up is balancing future sessions." : "Original schedule dates restored.");
+  });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeModal();
@@ -478,8 +713,7 @@ function initStaticEvents() {
   $$(".filter-pill").forEach((button) => button.addEventListener("click", () => {
     activeFilter = button.dataset.filter;
     $$(".filter-pill").forEach((pill) => pill.classList.toggle("active", pill === button));
-    renderSchedule(localDateISO());
-    bindDynamicEvents($("#schedule-list"));
+    render();
   }));
   $$(".nav-link").forEach((link) => link.addEventListener("click", () => {
     $$(".nav-link").forEach((item) => item.classList.toggle("active", item === link));

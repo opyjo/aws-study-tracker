@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#171b16">
   <meta name="description" content="A calm, focused AWS SAA-C03 study plan for the September 5, 2026 exam.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Cloudline — AWS SAA-C03 Study Tracker">
+  <meta property="og:description" content="Turn every practice test into progress with smart catch-up, a wrong-answer notebook, and score analytics.">
+  <meta property="og:image" content="https://aws-study-tracker-beta.vercel.app/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cloudline — AWS SAA-C03 Study Tracker">
+  <meta name="twitter:description" content="Turn every practice test into progress.">
+  <meta name="twitter:image" content="https://aws-study-tracker-beta.vercel.app/og.png">
   <title>Cloudline — AWS SAA-C03 Study Plan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +37,9 @@
       <nav class="nav-list" aria-label="Study tracker navigation">
         <a class="nav-link active" href="#today"><span>01</span>Today</a>
         <a class="nav-link" href="#roadmap"><span>02</span>Roadmap</a>
-        <a class="nav-link" href="#readiness"><span>03</span>Readiness</a>
+        <a class="nav-link" href="#notebook"><span>03</span>Wrong answers</a>
+        <a class="nav-link" href="#analytics"><span>04</span>Analytics</a>
+        <a class="nav-link" href="#readiness"><span>05</span>Readiness</a>
       </nav>
 
       <div class="sidebar-note">
@@ -94,6 +104,20 @@
 
       <div class="content-grid">
         <section class="primary-column">
+          <section class="catchup-card" id="catchup" aria-labelledby="catchup-title">
+            <span class="catchup-icon" aria-hidden="true">↻</span>
+            <div class="catchup-copy">
+              <span class="eyebrow">Smart catch-up</span>
+              <h2 id="catchup-title">Your practice flow stays intact.</h2>
+              <p id="catchup-message">Checking your schedule…</p>
+            </div>
+            <label class="switch-control">
+              <input id="smart-schedule-toggle" type="checkbox" checked>
+              <span class="switch-track" aria-hidden="true"><span></span></span>
+              <span class="switch-label">Auto-balance</span>
+            </label>
+          </section>
+
           <div class="section-heading">
             <div><span class="eyebrow">Focus</span><h2 id="focus-title">Today’s plan</h2></div>
             <span class="focus-duration" id="focus-duration">2 sessions</span>
@@ -110,6 +134,31 @@
               </div>
             </div>
             <div id="schedule-list" class="schedule-list"></div>
+          </section>
+
+          <section class="notebook-section feature-section" id="notebook">
+            <div class="section-heading">
+              <div><span class="eyebrow">Learn from every miss</span><h2>Wrong-answer notebook</h2></div>
+              <span class="focus-duration" id="notebook-count">0 mistakes logged</span>
+            </div>
+            <div id="notebook-summary" class="notebook-summary"></div>
+            <div id="notebook-list" class="notebook-list"></div>
+          </section>
+
+          <section class="analytics-section feature-section" id="analytics">
+            <div class="section-heading">
+              <div><span class="eyebrow">Performance</span><h2>Score analytics</h2></div>
+              <span class="focus-duration">Target trend · upward</span>
+            </div>
+            <div id="analytics-summary" class="analytics-summary"></div>
+            <div class="analytics-card">
+              <div class="analytics-card-head"><div><span class="eyebrow">By practice mode</span><h3>Average score</h3></div><span id="score-trend-label">Add your first score</span></div>
+              <div id="mode-analytics" class="mode-analytics"></div>
+            </div>
+            <div class="analytics-card history-card">
+              <div class="analytics-card-head"><div><span class="eyebrow">Recent results</span><h3>Score history</h3></div><span>Last 12 tests</span></div>
+              <div id="score-history" class="score-history"></div>
+            </div>
           </section>
         </section>
 
@@ -153,6 +202,37 @@
         <label>Date completed<input type="date" id="modal-date"></label>
         <label id="score-field">Score <span>(optional)</span><div class="score-input"><input type="number" id="modal-score" min="0" max="100" inputmode="numeric" placeholder="—"><span>%</span></div></label>
         <label>Quick note <span>(optional)</span><textarea id="modal-note" rows="3" maxlength="240" placeholder="What should you revisit?"></textarea></label>
+
+        <fieldset id="practice-fields" class="practice-fields">
+          <legend><span class="eyebrow">Wrong-answer log</span><strong>Turn mistakes into review material</strong></legend>
+          <div class="form-grid two-columns">
+            <label>Questions missed <span>(optional)</span><input type="number" id="modal-missed" min="0" max="65" inputmode="numeric" placeholder="0"></label>
+            <label>Uncertain guesses <span>(optional)</span><input type="number" id="modal-guessed" min="0" max="65" inputmode="numeric" placeholder="0"></label>
+          </div>
+          <label>Services or topics to revisit <span>(comma separated)</span><input type="text" id="modal-services" maxlength="160" placeholder="VPC endpoints, Route 53, KMS"></label>
+          <label>Primary reason
+            <select id="modal-reason">
+              <option value="">Choose a reason</option>
+              <option value="Knowledge gap">Knowledge gap</option>
+              <option value="Service confusion">Confused similar services</option>
+              <option value="Misread requirement">Misread the requirement</option>
+              <option value="Time pressure">Time pressure</option>
+              <option value="Changed answer">Changed the correct answer</option>
+              <option value="Guess">Guess</option>
+            </select>
+          </label>
+          <label>Correct principle <span>(what will you remember next time?)</span><textarea id="modal-principle" rows="3" maxlength="300" placeholder="Use a gateway endpoint for private S3 access without NAT…"></textarea></label>
+          <label>Confidence after review
+            <select id="modal-confidence">
+              <option value="">Not rated</option>
+              <option value="1">1 — Still unclear</option>
+              <option value="2">2 — Needs another review</option>
+              <option value="3">3 — Getting there</option>
+              <option value="4">4 — Confident</option>
+              <option value="5">5 — Can explain it</option>
+            </select>
+          </label>
+        </fieldset>
       </div>
 
       <div class="modal-actions">
@@ -166,7 +246,7 @@
     <div class="confirm-card">
       <span class="confirm-icon" aria-hidden="true">↻</span>
       <h2 id="confirm-title">Reset your new plan?</h2>
-      <p>This clears completion dates, scores, and notes for the September 5 schedule. It cannot be undone.</p>
+      <p>This clears completion dates, scores, notes, and wrong-answer records for the September 5 schedule. It cannot be undone.</p>
       <div class="modal-actions">
         <button class="button secondary" id="reset-cancel" type="button">Keep progress</button>
         <button class="button danger" id="reset-confirm" type="button">Reset everything</button>

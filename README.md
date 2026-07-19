@@ -9,6 +9,9 @@ A focused, responsive study tracker for the AWS Certified Solutions Architect �
 - A focused “today” view with session duration and next action
 - Full mock exams, domain drills, review days, and protected rest
 - Completion dates, optional practice scores, and private study notes
+- Smart catch-up scheduling that moves missed work forward without changing the practice sequence or protected rest days
+- A structured wrong-answer notebook for missed questions, weak services, causes, principles, and confidence
+- Score analytics across Topic, Review, Timed, Section, and final benchmark modes
 - Readiness estimates for all four SAA-C03 domains
 - Real-time Firestore sync with a device-local fallback
 - Responsive desktop and mobile layouts
